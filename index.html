@@ -3,17 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>링크모음</title>
-<meta property="og:title" content="mochi 링크 모음">
-<meta property="og:description" content="자주 쓰는 링크 모음">
-<meta property="og:image" content="https://mochi31872.github.io/mochi3790/images/linkzip.png">
-<meta property="og:url" content="https://mochi31872.github.io/mochi3790/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="mochi">
   <style>
     body {
       margin: 0;
       padding: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -57,44 +51,205 @@
     .link:hover {
       background-color: #005fa3;
     }
+
+  .link-group.full-width {
+    max-width: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .link-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 300px;
+  }
+
+  .link {
+    flex: 1 1 45%; 
+    text-align: center;
+    font-size: 16px;
+    padding: 10px 0;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+
+  .link:hover {
+    background-color: #005fa3;
+  }
+
+  #audioControlBox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 122, 204, 0.9);
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  #toggleBgm {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    background-color: #ffffff;
+    color: #007acc;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  #toggleBgm:hover {
+    background-color: #e6f0fa;
+    transform: scale(1.05);
+  }
+
+  #volumeControl {
+    width: 120px;
+    appearance: none;
+    height: 6px;
+    border-radius: 5px;
+    background: white;
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+
+  #volumeControl::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #007acc;
+    cursor: pointer;
+  }
+
+  #volumeControl::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #007acc;
+    cursor: pointer;
+  }
   </style>
 </head>
 <body>
+<div id="audioControlBox">
+  <button id="toggleBgm">🎵 배경음악 재생</button>
+  <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5">
+</div>
 
-  <div class="header">
-    <div class="title-box">
-      <h1>자주 사용</h1>
-      <a class="link" href="https://www.youtube.com/">유튜브</a>
-      <a class="link" href="https://github.com/">github</a>
-      <a class="link" href="ipcheck.html">아이피 확인</a>
-      <a class="link" href="https://anilife.live/">애니</a>
-      <a class="link" href="https://www.thecall.co.kr/bbs/board.php?bo_table=phone">더콜</a>
-      <a class="link" href="https://xn--220b31d95hq8o.xn--3e0b707e/">내도메인</a>
-      <a class="link" href="https://convertico.com/">ico(사진 확장자 -> ico) 변경</a>
-    </div>
+<audio id="bgm" loop>
+  <source src="붉은장미 시라유키 히나.mp3" type="audio/mpeg">
+  브라우저가 오디오를 지원하지 않습니다.
+</audio>
 
-    <div class="univ-box">
-      <h1>동서대학교</h1>
-      <a class="link" href="https://eclass1.dongseo.ac.kr/">eClass</a>
-      <a class="link" href="https://www.dongseo.ac.kr/kr/?pCode=main">홈페이지</a>
-      <a class="link" href="https://sugang.dongseo.ac.kr/">수강신청</a>
-    </div>
+<script>
+  const audio = document.getElementById('bgm');
+  const button = document.getElementById('toggleBgm');
+  const volumeSlider = document.getElementById('volumeControl');
 
-     <div class="univ-box">
-      <h1>게임</h1>
-      <a class="link" href="https://mhf.inven.co.kr/">몬헌 인벤</a>
-    </div>
-   
-    <div class="univ-box">
-      <h1>씹덕</h1>
-      <a class="link" href="https://gamebanana.com/games/8552">원신 모드</a>
-      <a class="link" href="https://arca.live/b/genshinskinmode">미호요 모드 채널</a>
-      <a class="link" href="https://arca.live/b/genshin">원신 채널</a>
-      <a class="link" href="https://arca.live/b/hkstarrail">스타레일 채널</a>
-      <a class="link" href="https://arca.live/b/zenlesszonezero">젠레스 채널</a>
-      <a class="link" href="https://arca.live/b/wutheringwaves">명조 채널</a>
+  let isPlaying = false;
+  audio.volume = volumeSlider.value;
+
+  button.addEventListener('click', () => {
+    if (isPlaying) {
+      audio.pause();
+      button.textContent = '🎵 배경음악 재생';
+    } else {
+      audio.play();
+      button.textContent = '⏸️ 배경음악 정지';
+    }
+    isPlaying = !isPlaying;
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    audio.volume = volumeSlider.value;
+  });
+</script>
+  
+<div class="header">
+  <div class="title-box">
+    <h1>자주 사용</h1>
+    <div class="link-group">
+      <a class="link" href="https://www.youtube.com/" target="_blank">유튜브</a>
+      <a class="link" href="https://www.instagram.com/" target="_blank">인스타</a>
+      <a class="link" href="https://x.com/home" target="_blank">X</a>
+      <a class="link" href="https://www.reddit.com/" target="_blank">reddit</a>
+      <a class="link" href="https://chatgpt.com/" target="_blank">챗gpt</a>
+      <a class="link" href="https://wrtn.ai/" target="_blank">뤼튼</a>
+      <a class="link" href="https://github.com/" target="_blank">github</a>
+      <a class="link" href="https://www.y2mate.com/kr868/youtube-mp3" target="_blank">mp3 전환1</a>
+      <a class="link" href="https://notube.net/kr/youtube-app-233" target="_blank">mp3 전환2</a>
+      <a class="link" href="ipcheck.html" target="_blank">아이피 확인</a>
+      <a class="link" href="https://anilife.live/" target="_blank">애니</a>
+      <a class="link" href="https://www.thecall.co.kr/bbs/board.php?bo_table=phone" target="_blank">더콜</a>
+      <a class="link" href="https://xn--220b31d95hq8o.xn--3e0b707e/" target="_blank">내도메인</a>
+      <a class="link" href="https://convertico.com/" target="_blank">ico(사진 확장자 -> ico) 변경</a>
+      <a class="link" href="https://convertio.co/kr/" target="_blank">파일 변환기</a>
+      <a class="link" href="https://haveibeenpwned.com/" target="_blank">hibp</a>
+      <a class="link" href="https://signalstickers.org/" target="_blank">시근널 이모티콘</a>
+      <a class="link" href="https://www.netflix.com/title/81646757" target="_blank">넷플</a>
+      <a class="link" href="https://discord.com/channels/@me" target="_blank">디스코드</a>
+      <a class="link" href="https://www.freeconvert.com/ko" target="_blank">파일변환1</a>
+      <a class="link" href="https://convertio.co/kr/" target="_blank">파일변환2</a>
+      <a class="link" href="https://reactive.fugi.tech/" target="_blank">짚톡</a>
     </div>
   </div>
 
+  <div class="univ-box">
+    <h1>게임</h1>
+    <div class="link-group full-width">
+      <a class="link" href="https://mhf.inven.co.kr/" target="_blank">몬헌 인벤</a>
+      <a class="link" href="https://temp-mail.org/ko/" target="_blank">임시 이메일</a>
+      <a class="link" href="https://phasmophobia-matrix.com/ko/" target="_blank">파스모</a>
+      <a class="link" href="https://godfield.net/" target="_blank">god field</a>
+      <a class="link" href="https://deathbyai.gg/" target="_blank">death by ai</a>
+      <a class="link" href="https://steamstat.us/" target="_blank">스팀 서버 상태 확인</a>
+    </div>
+  </div>
+
+  <div class="univ-box">
+    <h1>씹덕</h1>
+    <div class="link-group">
+      <a class="link" href="https://arca.live/b/genshinskinmode" target="_blank">미호요 모드 채널</a>
+      <a class="link" href="https://arca.live/b/genshin" target="_blank">원신 채널</a>
+      <a class="link" href="https://arca.live/b/bluearchive" target="_blank">블루아카 채널</a>
+      <a class="link" href="https://arca.live/b/hkstarrail" target="_blank">스타레일 채널</a>
+      <a class="link" href="https://arca.live/b/zenlesszonezero" target="_blank">젠레스 채널</a>
+      <a class="link" href="https://arca.live/b/wutheringwaves" target="_blank">명조 채널</a>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="univ-box">
+    <h1>씹덕게임</h1>
+    <div class="link-group full-width">
+      <a class="link" href="https://gamebanana.com/games/8552" target="_blank">원신 모드</a>
+      <a class="link" href="https://gamebanana.com/games/20357" target="_blank">명조 모드</a>
+      <a class="link" href="https://www.hoyolab.com/home" target="_blank">호오랩</a>
+      <a class="link" href="https://wuthering-waves-map.appsample.com/?map=septimont" target="_blank">명조 맵스</a>
+      <a class="link" href="https://act.hoyolab.com/ys/app/interactive-map/index.html?lang=ko-kr#/map/2?shown_types=600&center=5096.28,-9791.93&zoom=-2.50" target="_blank">원신 맵스</a>
+    </div>
+  </div>
+    
+  <div class="univ-box">
+    <h1>바이러스 제거 프로그램</h1>
+    <div class="link-group full-width">
+      <a class="link" href="https://malzero.xyz/" target="_blank">malware zero</a>
+    </div>
+  </div>
+</div>
 </body>
 </html>
